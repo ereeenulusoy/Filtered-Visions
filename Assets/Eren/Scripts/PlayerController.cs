@@ -1,16 +1,64 @@
+using TMPro;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+namespace WallPunch.FinalCharacterController
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
+    [DefaultExecutionOrder(-1)]
+    public class PlayerController : MonoBehaviour
+{
+        [Header("Component")]
+        [SerializeField] private CharacterController _characterController;
+        [SerializeField] private Camera _playerCamera;
+
+        [Header("Movement")]
+        public float runAcceleration = .25f; 
+        public float runSpeed = 4f;
+        public float drag = .1f;
+
+        [Header("Camera Movement")]
+        public float lookSenseH = .1f;
+        public float lookSenseV = .1f;
+        public float lookLimitV = 89f;
+
+        private PlayerLocomotionInput playerLocomotionInput;
+        private Vector2 cameraRotation = Vector2.zero;
+        private Vector2 playerTargetRotation = Vector2.zero;    
+
+        private void Awake()
+        {
+            playerLocomotionInput = GetComponent<PlayerLocomotionInput>();
+        }
+        private void Update()
+        {
+            Vector3 cameraForwardXZ = new Vector3(_playerCamera.transform.forward.x, 0f, _playerCamera.transform.forward.z).normalized;
+            Vector3 cameraRightXZ = new Vector3(_playerCamera.transform.right.x, 0f, _playerCamera.transform.right.z).normalized;
+            Vector3 movementDirection = cameraRightXZ * playerLocomotionInput.MovementInput.x + cameraForwardXZ * playerLocomotionInput.MovementInput.y;
+
+            Vector3 movementDelta = movementDirection * runAcceleration * Time.deltaTime;
+            Vector3 newVelocity = _characterController.velocity + movementDelta;
+
+            Vector3 currentDrag =  newVelocity.normalized * drag * Time.deltaTime;
+            newVelocity = (newVelocity.magnitude > drag * Time.deltaTime) ? newVelocity - currentDrag : Vector3.zero;
+            newVelocity = Vector3.ClampMagnitude(newVelocity, runSpeed);
+
+
+            //Move character
+            _characterController.Move(newVelocity * Time.deltaTime);
+
+        }
+
+        private void LateUpdate()
+        {
+            cameraRotation.x += lookSenseH * playerLocomotionInput.LookInput.x;
+            cameraRotation.y = Mathf.Clamp(cameraRotation.y - lookSenseV * playerLocomotionInput.LookInput.y, -lookLimitV, lookLimitV);
+
+            playerTargetRotation.x += transform.eulerAngles.x + lookSenseH * playerLocomotionInput.LookInput.x;
+            transform.rotation = Quaternion.Euler(0f, playerTargetRotation.x, 0f);
+
+            _playerCamera.transform.rotation = Quaternion.Euler(cameraRotation.y,cameraRotation.x, 0f); 
+
+        }
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
