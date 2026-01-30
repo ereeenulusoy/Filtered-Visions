@@ -11,9 +11,9 @@ namespace WallPunch.FinalCharacterController
         [SerializeField] private Camera _playerCamera;
 
         [Header("Movement")]
-        public float runAcceleration = .25f; 
+        public float runAcceleration = 50f; 
         public float runSpeed = 4f;
-        public float drag = .1f;
+        public float drag = 20f;
 
         [Header("Camera Movement")]
         public float lookSenseH = .1f;
