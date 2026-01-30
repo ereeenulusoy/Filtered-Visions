@@ -3,13 +3,30 @@ using UnityEngine;
 public class KameraScript : MonoBehaviour
 {
     public float mouseSensitivity = 100f;
-
+    public float xRotation = 0f; 
+    
 
     public Transform player;
     [SerializeField] private Vector3 offset;
 
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+    }
     void Update()
     {
-        transform.position = player.position + offset;
+        transform.position = player.position ;
+
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+        player.Rotate(Vector3.up * mouseX);
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+
+        // Kameranýn kendi rotasyonunu (X ekseni) güncelle
+        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+
     }
 }
