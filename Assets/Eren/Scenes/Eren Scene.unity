@@ -587,7 +587,7 @@ CharacterController:
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
+  m_MinMoveDistance: 0.00001
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1950644253
 MonoBehaviour:
@@ -601,6 +601,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f304ed2adb3ac444cacd0779b792bc3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  _characterController: {fileID: 1950644252}
+  _playerCamera: {fileID: 330585545}
+  runAcceleration: 0.25
+  runSpeed: 4
+  drag: 0.1
+  lookSenseH: 0.1
+  lookSenseV: 0.1
+  lookLimitV: 89
 --- !u!114 &1950644254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -678,7 +686,7 @@ Transform:
   m_GameObject: {fileID: 1950644251}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 1.16, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
