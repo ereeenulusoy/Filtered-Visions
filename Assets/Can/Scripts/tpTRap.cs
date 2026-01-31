@@ -14,7 +14,7 @@ public class tpTRap : MonoBehaviour
         timer = 0f;
         tpState = 1;
         closedPos = transform.position;
-
+        Debug.Log("Closed Position: " + closedPos);
 
     }
 

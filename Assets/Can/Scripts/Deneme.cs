@@ -9,7 +9,7 @@ public class Deneme : MonoBehaviour
     public GameObject[] blueBox;
     public GameObject[] redBox;
 
-    private void Start()
+    private void Awake()
     {
          ActivateBlueFilter (); 
     }
@@ -19,11 +19,12 @@ public class Deneme : MonoBehaviour
          if(Input.GetKeyDown(KeyCode.Q))
          {
              ActivateRedFilter();
+            Debug.Log("Red Filter Activated");
 
         }
          else if(Input.GetKeyDown(KeyCode.E))
          {
-           
+           Debug.Log("Blue Filter Activated");
             ActivateBlueFilter(); 
         }
     }
