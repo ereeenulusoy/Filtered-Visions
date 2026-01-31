@@ -2,49 +2,67 @@ using UnityEngine;
 
 public class AnimChar : MonoBehaviour
 {
-   
-    public float speed; 
-    public float JumpForce;
+    public float speed = 5f;
+    public float jumpForce = 5f;
+    public bool isGrounded;
+
     private Rigidbody rb;
     private Animator anim;
-
-    private bool isGrounded;
+    private float yatay;
+    private float dikey;
+    private bool jumpRequested;
 
     private void Start()
     {
-         rb = GetComponent<Rigidbody>(); 
+        rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
 
+        // Karakterin devrilmesini engellemek iï¿½in (X ve Z rotasyonunu dondur)
+        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
-  private void   FixedUpdate()
+    private void Update()
     {
-        float yatay = Input.GetAxis("Horizontal"); // A-D veya Sol-Sað ok
-        float dikey = Input.GetAxis("Vertical");   // W-S veya Yukarý-Aþaðý ok
-
-        Vector3 moveForce = new Vector3(yatay, 0, dikey) * speed  * Time.deltaTime;
-        transform.Translate(moveForce);
-
-        bool isMoving = moveForce.magnitude > 0;
-        if (isGrounded)
-            anim.SetBool("isMoving", isMoving);
+        // Girdi (Input) her zaman Update iï¿½inde alï¿½nï¿½r
+        yatay = Input.GetAxis("Horizontal");
+        dikey = Input.GetAxis("Vertical");
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            rb.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
-            isGrounded = false;
-            anim.SetBool("isJumping", true);
+            jumpRequested = true;
         }
-    } 
 
+        // Animasyon parametrelerini burada gï¿½ncellemek daha akï¿½cï¿½dï¿½r
+        bool isMoving = (Mathf.Abs(yatay) > 0.1f || Mathf.Abs(dikey) > 0.1f);
+        anim.SetBool("isMoving", isMoving && isGrounded);
+    }
 
-    // Yere deðdiðini anlamak için basit çarpýþma kontrolü
+    private void FixedUpdate()
+    {
+        // HAREKET: Translate yerine Velocity kullanarak yerï¿½ekimine izin veriyoruz
+        Vector3 moveDir = new Vector3(yatay, 0, dikey).normalized;
+        Vector3 targetVelocity = moveDir * speed;
+
+        // Y eksenindeki hï¿½zï¿½ (yerï¿½ekimini) koruyarak sadece X ve Z'yi deï¿½iï¿½tiriyoruz
+        rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
+
+        // ZIPLAMA
+        if (jumpRequested)
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isGrounded = false;
+            jumpRequested = false;
+            anim.SetBool("isJumping", true); // Animator'da bu parametre varsa
+        }
+    }
+
     void OnCollisionEnter(Collision collision)
     {
+        // Tag'in tam olarak "Ground" yazï¿½ldï¿½ï¿½ï¿½ndan emin ol (Bï¿½yï¿½k/kï¿½ï¿½ï¿½k harf duyarlï¿½)
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
-            // Düþme animasyonunu bitirip Idle/Walk'a dönmek için burasý kullanýlýr
+            anim.SetBool("isJumping", false);
         }
     }
 }

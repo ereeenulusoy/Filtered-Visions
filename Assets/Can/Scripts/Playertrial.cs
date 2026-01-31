@@ -18,6 +18,7 @@ public class Playertrial : MonoBehaviour
     private Color FadeColorAlpha;
 
     private Rigidbody rb;
+    public Camera cam; 
 
 
 
@@ -25,6 +26,8 @@ public class Playertrial : MonoBehaviour
     {
          rb = GetComponent<Rigidbody>();
         Debug.Log(ResPoint.position);
+
+        cam = GetComponentInChildren<Camera>(); 
         // Eðer fadeImage'i Inspector'dan atýyorsanýz þu satýrý kaldýrabilirsiniz.
         fadeImage = FindFirstObjectByType<Image>();
         // Hata: 'fadeImage.color.a = 0f;' yazýlamaz çünkü 'color' bir struct (Color) olarak deðere göre döner.
@@ -51,7 +54,7 @@ public class Playertrial : MonoBehaviour
         Vector3 movement = new Vector3(horizontal, 0f, vertical) * speed * Time.deltaTime;
         transform.Translate(movement);
 
-        transform.localRotation = Quaternion.Euler(0f, Camera.main.transform.eulerAngles.y, 0f);
+        transform.localRotation = Quaternion.Euler(0f, cam.transform.eulerAngles.y, 0f);
 
 
         yposition = transform.position.y;
