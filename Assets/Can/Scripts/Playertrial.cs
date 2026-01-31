@@ -22,7 +22,7 @@ public class Playertrial : MonoBehaviour
          rb = GetComponent<Rigidbody>(); 
         Debug.Log(ResPoint.position);
         // Eðer fadeImage'i Inspector'dan atýyorsanýz þu satýrý kaldýrabilirsiniz.
-        fadeImage = FindAnyObjectByType<Image>();
+        fadeImage = FindFirstObjectByType<Image>();
         // Hata: 'fadeImage.color.a = 0f;' yazýlamaz çünkü 'color' bir struct (Color) olarak deðere göre döner.
         // Dönen struct'ýn alanýný doðrudan deðiþtiremezsiniz. Bunun yerine Color'u alýp deðiþtirip tekrar atayýn:
         if (fadeImage != null)

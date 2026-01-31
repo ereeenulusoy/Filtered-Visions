@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class slideTRAP1 : MonoBehaviour
 {
-   
+    public Transform StartPoint;
+
     private Vector3 closedPos; 
     public float speed = 2f;
     bool isgoing = false;
@@ -12,12 +13,13 @@ public class slideTRAP1 : MonoBehaviour
     private void Start()
     {
          closedPos = transform.position;
+        transform.position = StartPoint.position;
     }
 
     private void Update()
     {
          timer = timer + Time.deltaTime;
-        Debug.Log(timer);
+       
 
 
         if (timer > 2f)
