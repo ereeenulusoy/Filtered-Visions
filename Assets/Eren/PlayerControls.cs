@@ -276,6 +276,34 @@ namespace WallPunch.FinalCharacterController
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""ThirdPersonMap"",
+            ""id"": ""c4a0ad87-787e-40e9-a955-4bdee47c0ddc"",
+            ""actions"": [
+                {
+                    ""name"": ""ScrollCamera"",
+                    ""type"": ""Value"",
+                    ""id"": ""d2bdba0d-98f5-4c85-829c-c90bae874469"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""956dd660-ae5b-440f-a572-dea3b26411c7"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -286,11 +314,15 @@ namespace WallPunch.FinalCharacterController
             m_PlayerLocomotionMap_Look = m_PlayerLocomotionMap.FindAction("Look", throwIfNotFound: true);
             m_PlayerLocomotionMap_ToggleSprint = m_PlayerLocomotionMap.FindAction("ToggleSprint", throwIfNotFound: true);
             m_PlayerLocomotionMap_Jump = m_PlayerLocomotionMap.FindAction("Jump", throwIfNotFound: true);
+            // ThirdPersonMap
+            m_ThirdPersonMap = asset.FindActionMap("ThirdPersonMap", throwIfNotFound: true);
+            m_ThirdPersonMap_ScrollCamera = m_ThirdPersonMap.FindAction("ScrollCamera", throwIfNotFound: true);
         }
 
         ~@PlayerControls()
         {
             UnityEngine.Debug.Assert(!m_PlayerLocomotionMap.enabled, "This will cause a leak and performance issues, PlayerControls.PlayerLocomotionMap.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_ThirdPersonMap.enabled, "This will cause a leak and performance issues, PlayerControls.ThirdPersonMap.Disable() has not been called.");
         }
 
         /// <summary>
@@ -491,6 +523,102 @@ namespace WallPunch.FinalCharacterController
         /// Provides a new <see cref="PlayerLocomotionMapActions" /> instance referencing this action map.
         /// </summary>
         public PlayerLocomotionMapActions @PlayerLocomotionMap => new PlayerLocomotionMapActions(this);
+
+        // ThirdPersonMap
+        private readonly InputActionMap m_ThirdPersonMap;
+        private List<IThirdPersonMapActions> m_ThirdPersonMapActionsCallbackInterfaces = new List<IThirdPersonMapActions>();
+        private readonly InputAction m_ThirdPersonMap_ScrollCamera;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "ThirdPersonMap".
+        /// </summary>
+        public struct ThirdPersonMapActions
+        {
+            private @PlayerControls m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public ThirdPersonMapActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "ThirdPersonMap/ScrollCamera".
+            /// </summary>
+            public InputAction @ScrollCamera => m_Wrapper.m_ThirdPersonMap_ScrollCamera;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_ThirdPersonMap; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="ThirdPersonMapActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(ThirdPersonMapActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="ThirdPersonMapActions" />
+            public void AddCallbacks(IThirdPersonMapActions instance)
+            {
+                if (instance == null || m_Wrapper.m_ThirdPersonMapActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_ThirdPersonMapActionsCallbackInterfaces.Add(instance);
+                @ScrollCamera.started += instance.OnScrollCamera;
+                @ScrollCamera.performed += instance.OnScrollCamera;
+                @ScrollCamera.canceled += instance.OnScrollCamera;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="ThirdPersonMapActions" />
+            private void UnregisterCallbacks(IThirdPersonMapActions instance)
+            {
+                @ScrollCamera.started -= instance.OnScrollCamera;
+                @ScrollCamera.performed -= instance.OnScrollCamera;
+                @ScrollCamera.canceled -= instance.OnScrollCamera;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ThirdPersonMapActions.UnregisterCallbacks(IThirdPersonMapActions)" />.
+            /// </summary>
+            /// <seealso cref="ThirdPersonMapActions.UnregisterCallbacks(IThirdPersonMapActions)" />
+            public void RemoveCallbacks(IThirdPersonMapActions instance)
+            {
+                if (m_Wrapper.m_ThirdPersonMapActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="ThirdPersonMapActions.AddCallbacks(IThirdPersonMapActions)" />
+            /// <seealso cref="ThirdPersonMapActions.RemoveCallbacks(IThirdPersonMapActions)" />
+            /// <seealso cref="ThirdPersonMapActions.UnregisterCallbacks(IThirdPersonMapActions)" />
+            public void SetCallbacks(IThirdPersonMapActions instance)
+            {
+                foreach (var item in m_Wrapper.m_ThirdPersonMapActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_ThirdPersonMapActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="ThirdPersonMapActions" /> instance referencing this action map.
+        /// </summary>
+        public ThirdPersonMapActions @ThirdPersonMap => new ThirdPersonMapActions(this);
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "PlayerLocomotionMap" which allows adding and removing callbacks.
         /// </summary>
@@ -526,6 +654,21 @@ namespace WallPunch.FinalCharacterController
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnJump(InputAction.CallbackContext context);
+        }
+        /// <summary>
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ThirdPersonMap" which allows adding and removing callbacks.
+        /// </summary>
+        /// <seealso cref="ThirdPersonMapActions.AddCallbacks(IThirdPersonMapActions)" />
+        /// <seealso cref="ThirdPersonMapActions.RemoveCallbacks(IThirdPersonMapActions)" />
+        public interface IThirdPersonMapActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "ScrollCamera" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnScrollCamera(InputAction.CallbackContext context);
         }
     }
 }
