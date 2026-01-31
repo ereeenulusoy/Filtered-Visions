@@ -14,6 +14,8 @@ public class Playertrial : MonoBehaviour
     public Image fadeImage;
     private Color FadeColorAlpha;
 
+    private int flyState = 0; 
+
 
     private void Start()
     {
@@ -43,10 +45,12 @@ public class Playertrial : MonoBehaviour
         Vector3 movement = new Vector3(horizontal, 0f, vertical) * speed * Time.deltaTime;
         transform.Translate(movement);
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && flyState<2)
         {
             Debug.Log("Space key was pressed.");
+
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); 
+            flyState++; 
         }
 
         yposition = transform.position.y;
@@ -90,5 +94,13 @@ public class Playertrial : MonoBehaviour
 
     }
 
-
+    public void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            Debug.Log("Landed on the ground.");
+            flyState = 0;
+        }
+    }
 }
+
