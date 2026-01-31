@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 59e22df544427c74c9f0c45405c82d0b
+guid: bf558c4208da6c04391cd1e535ba78d4
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -31,13 +31,13 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Run Backward
+      name: Jumping Up
       takeName: mixamo.com
       internalID: -203655887218126122
-      firstFrame: 0
-      lastFrame: 19
+      firstFrame: 8.8
+      lastFrame: 25
       wrapMode: 0
-      orientationOffsetY: 180
+      orientationOffsetY: 20
       level: 0
       cycleOffset: 0
       loop: 0
