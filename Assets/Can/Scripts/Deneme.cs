@@ -11,7 +11,9 @@ public class Deneme : MonoBehaviour
 
     private void Awake()
     {
-         ActivateBlueFilter (); 
+         ActivateBlueFilter ();
+       
+
     }
 
     private void Update()
