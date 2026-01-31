@@ -3,10 +3,8 @@ using UnityEngine.UI;
 
 public class Playertrial : MonoBehaviour
 {
-    [SerializeField] private float speed = 5f;
-    [SerializeField] private float jumpForce = 5f;
-    private Rigidbody rb; 
-
+    
+  
     private float yposition; 
     public Transform ResPoint;
 
@@ -14,12 +12,11 @@ public class Playertrial : MonoBehaviour
     public Image fadeImage;
     private Color FadeColorAlpha;
 
-    private int flyState = 0; 
 
 
     private void Start()
     {
-         rb = GetComponent<Rigidbody>(); 
+         
         Debug.Log(ResPoint.position);
         // Eðer fadeImage'i Inspector'dan atýyorsanýz þu satýrý kaldýrabilirsiniz.
         fadeImage = FindFirstObjectByType<Image>();
@@ -40,18 +37,9 @@ public class Playertrial : MonoBehaviour
 
     private void Update()
     { 
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
-        Vector3 movement = new Vector3(horizontal, 0f, vertical) * speed * Time.deltaTime;
-        transform.Translate(movement);
+        
 
-        if (Input.GetKeyDown(KeyCode.Space) && flyState<2)
-        {
-            Debug.Log("Space key was pressed.");
-
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); 
-            flyState++; 
-        }
+       
 
         yposition = transform.position.y;
 
@@ -69,7 +57,7 @@ public class Playertrial : MonoBehaviour
     {
         // 19.13, 0.50, -11.04
         transform.position = ResPoint.position;
-        rb.linearVelocity = Vector3.zero;
+       
     } 
 
     private void FadeInOut()
@@ -91,16 +79,8 @@ public class Playertrial : MonoBehaviour
             fadeImage.color = FadeColorAlpha;
         }
 
-
     }
 
-    public void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            Debug.Log("Landed on the ground.");
-            flyState = 0;
-        }
-    }
+   
 }
 
