@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace WallPunch.FinalCharacterController
@@ -15,12 +13,18 @@ namespace WallPunch.FinalCharacterController
 
         public bool InGroundedState()
         {
-            return CurrentPlayerMovementState == PlayerMovementState.Idling ||
-                   CurrentPlayerMovementState == PlayerMovementState.Walking ||
-                   CurrentPlayerMovementState == PlayerMovementState.Running ||
-                   CurrentPlayerMovementState == PlayerMovementState.Sprinting;
+            return IsStateGroundedState(CurrentPlayerMovementState);
+        }
+
+        public bool IsStateGroundedState(PlayerMovementState movementState)
+        {
+            return movementState == PlayerMovementState.Idling ||
+                   movementState == PlayerMovementState.Walking ||
+                   movementState == PlayerMovementState.Running ||
+                   movementState == PlayerMovementState.Sprinting;
         }
     }
+
     public enum PlayerMovementState
     {
         Idling = 0,

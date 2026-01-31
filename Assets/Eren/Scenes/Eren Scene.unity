@@ -3597,15 +3597,21 @@ MonoBehaviour:
   _playerCamera: {fileID: 5531982654896988081}
   runAcceleration: 50
   runSpeed: 4
-  sprintAccelerataion: 50
+  sprintAcceleration: 50
   sprintSpeed: 7
+  inAirAcceleration: 25
   drag: 15
   gravity: 25
   jumpSpeed: 1
   movingThreshold: 0.01
+  playerModelRotationSpeed: 10
+  rotateToTargetTime: 0.67
   lookSenseH: 0.1
   lookSenseV: 0.1
   lookLimitV: 70
+  _groundLayers:
+    serializedVersion: 2
+    m_Bits: 32
 --- !u!114 &8695282258893147251
 MonoBehaviour:
   m_ObjectHideFlags: 0
