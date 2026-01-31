@@ -705,11 +705,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_LocalScale.x
-      value: 962.44244
+      value: 271.40878
       objectReference: {fileID: 0}
     - target: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_LocalScale.y
-      value: 202.54733
+      value: 1062.857
       objectReference: {fileID: 0}
     - target: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_LocalScale.z
@@ -717,11 +717,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.9
+      value: 1.332
       objectReference: {fileID: 0}
     - target: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 27
+      value: 20.092
       objectReference: {fileID: 0}
     - target: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_LocalPosition.z
@@ -729,15 +729,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -1
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_LocalRotation.z
@@ -753,7 +753,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 180
+      value: 270
       objectReference: {fileID: 0}
     - target: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_ConstrainProportionsScale
@@ -1087,6 +1087,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: -7648502956408741331, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
   m_PrefabInstance: {fileID: 20737363}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &72105506 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8557002723003063263, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
+  m_PrefabInstance: {fileID: 20737363}
+  m_PrefabAsset: {fileID: 0}
 --- !u!65 &72105507
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1120,7 +1125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e03972bb2edaa04da99c5d20059a924, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::slideTRAP1
-  StartPoint: {fileID: 0}
+  StartPoint: {fileID: 72105506}
   speed: 11
 --- !u!1 &127936469
 GameObject:
@@ -1658,6 +1663,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: -1891630423312683343, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
   m_PrefabInstance: {fileID: 20737363}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &392141800 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1771266950956608360, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
+  m_PrefabInstance: {fileID: 20737363}
+  m_PrefabAsset: {fileID: 0}
 --- !u!65 &392141801
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1688,10 +1698,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 392141799}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a84d0d34443bc074c8275fd4109171a8, type: 3}
+  m_Script: {fileID: 11500000, guid: 7e03972bb2edaa04da99c5d20059a924, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UpSlide
-  speed: 13
+  m_EditorClassIdentifier: Assembly-CSharp::slideTRAP1
+  StartPoint: {fileID: 392141800}
+  speed: 12
 --- !u!1 &394147988
 GameObject:
   m_ObjectHideFlags: 0
@@ -1949,6 +1960,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7917349904687423284, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
   m_PrefabInstance: {fileID: 20737363}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &615226765 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -9182575856355518394, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
+  m_PrefabInstance: {fileID: 20737363}
+  m_PrefabAsset: {fileID: 0}
 --- !u!65 &615226766
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1982,7 +1998,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e03972bb2edaa04da99c5d20059a924, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::slideTRAP1
-  StartPoint: {fileID: 0}
+  StartPoint: {fileID: 615226765}
   speed: 20
 --- !u!1 &721861290
 GameObject:
@@ -3172,6 +3188,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: -8455728280606582528, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
   m_PrefabInstance: {fileID: 20737363}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1207955522 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6028728253787450086, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
+  m_PrefabInstance: {fileID: 20737363}
+  m_PrefabAsset: {fileID: 0}
 --- !u!65 &1207955523
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3205,7 +3226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e03972bb2edaa04da99c5d20059a924, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::slideTRAP1
-  StartPoint: {fileID: 0}
+  StartPoint: {fileID: 1207955522}
   speed: 23
 --- !u!1 &1295037089
 GameObject:
