@@ -4,29 +4,31 @@ using UnityEngine.InputSystem;
 namespace WallPunch.FinalCharacterController
 {
     [DefaultExecutionOrder(-2)]
-    public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomotionMapActions
+    public class ThirdPersonInput : MonoBehaviour, PlayerControls.IThirdPersonMapActions
     {
         [Header("Settings")]
         [SerializeField] private bool holdToSprint = true;
 
-        public PlayerControls PlayerControls { get; private set; }
-        public Vector2 MovementInput { get; private set; }
-        public Vector2 LookInput { get; private set; }
-        public bool JumpPressed { get; private set; }
-        public bool SprintToggledOn { get; private set; }
-
         private void OnEnable()
         {
-            PlayerControls = new PlayerControls();
-            PlayerControls.Enable();
-            PlayerControls.PlayerLocomotionMap.Enable();
-            PlayerControls.PlayerLocomotionMap.SetCallbacks(this);
+            // GÜNCELLEME BURADA: InputManager'ý bekliyoruz
+            if (PlayerInputManager.Instance?.PlayerControls == null)
+            {
+                Debug.LogError("Player controls baþlatýlmadý - enable edilemiyor");
+                return;
+            }
+
+            // Manager'daki kontrollere abone oluyoruz
+            PlayerInputManager.Instance.PlayerControls.PlayerLocomotionMap.Enable();
+            PlayerInputManager.Instance.PlayerControls.PlayerLocomotionMap.SetCallbacks(this);
         }
 
         private void OnDisable()
         {
-            PlayerControls.PlayerLocomotionMap.Disable();
-            PlayerControls.PlayerLocomotionMap.RemoveCallbacks(this);
+            if (PlayerInputManager.Instance?.PlayerControls == null) return;
+
+            PlayerInputManager.Instance.PlayerControls.PlayerLocomotionMap.Disable();
+            PlayerInputManager.Instance.PlayerControls.PlayerLocomotionMap.RemoveCallbacks(this);
         }
 
         private void LateUpdate()
@@ -62,6 +64,6 @@ namespace WallPunch.FinalCharacterController
             JumpPressed = true;
         }
 
-        public void OnToggleWalk(InputAction.CallbackContext context) { } // Boþ býraktýk
+        public void OnToggleWalk(InputAction.CallbackContext context) { }
     }
 }
