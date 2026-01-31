@@ -10,6 +10,9 @@ namespace WallPunch.FinalCharacterController
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private Camera _playerCamera;
 
+        [Header("Limits")]
+        public float terminalVelocity = 20.0f;
+
         public float RotationMismatch { get; private set; } = 0f;
         public bool IsRotatingToTarget { get; private set; } = false;
 
@@ -113,19 +116,24 @@ namespace WallPunch.FinalCharacterController
 
             _verticalVelocity -= gravity * Time.deltaTime;
 
-            // Yerdeysek ve aþaðý doðru çekiliyorsak, anti-bump uygula (yere yapýþtýr)
+            // --- YENÝ EKLENECEK KISIM BAÞLANGICI ---
+            // Eðer düþüþ hýzý, terminal hýzdan fazlaysa, sabitle.
+            // (Not: Düþüþ hýzý negatiftir, o yüzden -terminalVelocity ile kýyaslýyoruz)
+            if (_verticalVelocity < -terminalVelocity)
+            {
+                _verticalVelocity = -terminalVelocity;
+            }
+            // --- YENÝ EKLENECEK KISIM SONU ---
+
             if (isGrounded && _verticalVelocity < 0)
                 _verticalVelocity = -_antiBump;
 
             if (_playerLocomotionInput.JumpPressed && isGrounded)
             {
-                // Zýplama formülü
                 _verticalVelocity += Mathf.Sqrt(jumpSpeed * 3 * gravity);
                 _jumpedLastFrame = true;
             }
 
-            // Eðer bir önceki karede yerdeysek ama þimdi havadaysak (örn: yokuþ aþaðý koþarken),
-            // karakteri aþaðý iterek yere yapýþtýr.
             if (_playerState.IsStateGroundedState(_lastMovementState) && !isGrounded)
             {
                 _verticalVelocity += _antiBump;

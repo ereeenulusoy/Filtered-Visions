@@ -1,19 +1,16 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Playertrial : MonoBehaviour
+public class PlayerScript : MonoBehaviour
 {
-    
-  
-    private float yposition; 
+    private float yposition;
     public Transform ResPoint;
 
     public float speed = 5f;
-    public float jumpFOrce = 5f; 
+    public float jumpFOrce = 5f;
     public int jumpCount = 0;
 
-    private float fadeDuration = 0f; 
+    private float fadeDuration = 0f;
     public Image fadeImage;
     private Color FadeColorAlpha;
 
@@ -23,7 +20,7 @@ public class Playertrial : MonoBehaviour
 
     private void Start()
     {
-         rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
         Debug.Log(ResPoint.position);
         // Eðer fadeImage'i Inspector'dan atýyorsanýz þu satýrý kaldýrabilirsiniz.
         fadeImage = FindFirstObjectByType<Image>();
@@ -43,8 +40,8 @@ public class Playertrial : MonoBehaviour
     }
 
     private void Update()
-    { 
-        
+    {
+
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
@@ -65,9 +62,9 @@ public class Playertrial : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2)
         {
-           rb.AddForce(Vector3.up * jumpFOrce, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * jumpFOrce, ForceMode.Impulse);
             jumpCount++;
-        } 
+        }
 
     }
 
@@ -75,8 +72,8 @@ public class Playertrial : MonoBehaviour
     {
         // 19.13, 0.50, -11.04
         transform.position = ResPoint.position;
-       
-    } 
+
+    }
 
     private void FadeInOut()
     {
@@ -84,8 +81,8 @@ public class Playertrial : MonoBehaviour
 
         if (yposition < 0f)
         {
-            fadeDuration = yposition/-10f;
-          
+            fadeDuration = yposition / -10f;
+
             FadeColorAlpha.a = fadeDuration;
             fadeImage.color = FadeColorAlpha;
 
@@ -109,4 +106,3 @@ public class Playertrial : MonoBehaviour
 
 
 }
-
