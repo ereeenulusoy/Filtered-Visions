@@ -43,8 +43,7 @@ namespace WallPunch.FinalCharacterController
             bool isFalling = _playerState.CurrentPlayerMovementState == PlayerMovementState.Falling;
             bool isGrounded = _playerState.InGroundedState();
 
-            // SADECE RUN VE SPRINT VAR
-            // Sprint ise 1.5, Deðilse (Run) 1.0
+          
             Vector2 inputTarget = isSprinting ? _playerLocomotionInput.MovementInput * 1.5f :
                                   _playerLocomotionInput.MovementInput * 1f;
 

@@ -253,9 +253,13 @@ namespace WallPunch.FinalCharacterController
 
         private bool IsGroundedWhileGrounded()
         {
-            // Yerdeyken basit bir küre kontrolü yap
+            
             Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - _characterController.radius, transform.position.z);
-            bool grounded = Physics.CheckSphere(spherePosition, _characterController.radius, _groundLayers, QueryTriggerInteraction.Ignore);
+
+            float tolerance = 0.05f;
+
+            bool grounded = Physics.CheckSphere(spherePosition, _characterController.radius + tolerance, _groundLayers, QueryTriggerInteraction.Ignore);
+
             return grounded;
         }
 
