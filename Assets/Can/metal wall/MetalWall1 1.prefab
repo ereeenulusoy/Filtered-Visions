@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5085279345796902971}
   - component: {fileID: 4002318749778244359}
   m_Layer: 0
-  m_Name: MetalWall1
+  m_Name: MetalWall1 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
