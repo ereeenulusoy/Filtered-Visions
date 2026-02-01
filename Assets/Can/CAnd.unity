@@ -4846,8 +4846,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1438684085}
   - component: {fileID: 1438684084}
-  - component: {fileID: 1438684083}
   - component: {fileID: 1438684082}
+  - component: {fileID: 1438684083}
   m_Layer: 0
   m_Name: KarakterCOlls
   m_TagString: Player
