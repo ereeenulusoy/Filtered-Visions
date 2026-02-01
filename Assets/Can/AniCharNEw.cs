@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 public class AniCharNEw : MonoBehaviour
 {
+    private WallRunningSystem wallRunSystem;
+
     [Header("References")]
     public Transform ResPoint;
     private Animator anim;
@@ -16,15 +18,15 @@ public class AniCharNEw : MonoBehaviour
 
     [Header("Ground Check")]
     public bool isGrounded;
-    public float groundCheckDistance = 0.2f; // Raycast mesafesi
-    public LayerMask groundLayer; // Inspector'dan Ground Layer seçilmeli!
+    public float groundCheckDistance = 0.2f;
+    public LayerMask groundLayer;
 
     // Private Variables
     private int jumpCount = 0;
     private float yposition;
     private Color FadeColorAlpha;
 
-    // Animator Hash ID'leri (Performans için)
+    // Animator Hash ID'leri
     private int inputXHash = Animator.StringToHash("inputX");
     private int inputYHash = Animator.StringToHash("inputY");
     private int isGroundedHash = Animator.StringToHash("isGrounded");
@@ -34,8 +36,12 @@ public class AniCharNEw : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        // Animator'ı çocuk objelerde ara (senin hiyerarşine uygun)
         anim = GetComponentInChildren<Animator>();
+        wallRunSystem = GetComponent<WallRunningSystem>();
+
+        // TİTREME ÖNLEYİCİ #1: Rigidbody Ayarları
+        rb.freezeRotation = true; // Fizik motoru karakteri döndürmesin
+        rb.interpolation = RigidbodyInterpolation.Interpolate; // Kareler arası yumuşatma
 
         if (anim == null) Debug.LogError("Animator bulunamadı!");
 
@@ -56,6 +62,9 @@ public class AniCharNEw : MonoBehaviour
         // 1. INPUT ALMA
         if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 1)
         {
+            // Duvardaysak zıplamayı WallRunSystem halletsin
+            if (wallRunSystem != null && wallRunSystem.isWallRunning) return;
+
             Jump();
         }
 
@@ -67,20 +76,51 @@ public class AniCharNEw : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // --- 1. HAREKET (Arkadaşının Mantığı Korundu) ---
+        // --- WALL RUN KONTROLÜ ---
+        if (wallRunSystem != null && wallRunSystem.isWallRunning)
+        {
+            isGrounded = false;
+            UpdateAnimation(0, 0);
+            // Duvardayken Translate yapmıyoruz, kontrol tamamen WallRunSystem'de (Fizik tabanlı)
+            return;
+        }
+
+        // --- 1. NORMAL HAREKET (Translate ile) ---
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        // Kameraya göre hareket yönü
+        // Hareket vektörü (Local Space)
         Vector3 movement = new Vector3(horizontal, 0f, vertical) * speed * Time.deltaTime;
-        transform.Translate(movement);
+
+        // TİTREME ÖNLEYİCİ #2: Akıllı Hareket (Smart Move)
+        // Translate yapmadan önce, gideceğimiz yönde duvar var mı diye kontrol ediyoruz.
+        // Rigidbody.SweepTest bizim yerimize fiziği kontrol eder.
+        // TransformDirection ile local hareketi dünya yönüne çeviriyoruz.
+        Vector3 worldDir = transform.TransformDirection(movement.normalized);
+
+        // Eğer gideceğimiz yönde (hareket miktarı kadar) bir engel YOKSA hareket et
+        // Veya hareket çok küçükse (duruyorsak) kontrol etme
+        if (movement.magnitude > 0.001f)
+        {
+            // Önümüzde engel yoksa yürü
+            if (!rb.SweepTest(worldDir, out RaycastHit hit, movement.magnitude + 0.01f))
+            {
+                transform.Translate(movement);
+            }
+            // Engel varsa ama çok dik değilse (merdiven/yokuş gibi) yine de yürü
+            else if (isGrounded)
+            {
+                // Basit bir kaydırma mantığı (duvara takılmamak için)
+                // Burayı boş bırakıyoruz, SweepTest duvara girmeyi engellediği için titreme kesilir.
+            }
+        }
 
         // Karakteri hep kameranın baktığı yöne çevir
-        transform.localRotation = Quaternion.Euler(0f, cam.transform.eulerAngles.y, 0f);
+        // Slerp ekleyerek dönüşü biraz yumuşattım (Jitter azaltır)
+        Quaternion targetRotation = Quaternion.Euler(0f, cam.transform.eulerAngles.y, 0f);
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, 15f * Time.deltaTime);
 
-        // --- 2. GROUND CHECK (Collision yerine Raycast - ÇOK ÖNEMLİ) ---
-        // OnCollisionEnter animasyonlar için yetersiz kalır (Falling için).
-        // Karakterin hafif üstünden aşağıya ışın atıyoruz.
+        // --- 2. GROUND CHECK ---
         Vector3 rayStart = transform.position + Vector3.up * 0.1f;
         isGrounded = Physics.Raycast(rayStart, Vector3.down, groundCheckDistance, groundLayer);
 
@@ -97,17 +137,16 @@ public class AniCharNEw : MonoBehaviour
     {
         if (anim == null) return;
 
-       
         float currentX = anim.GetFloat(inputXHash);
-        float currentZ = anim.GetFloat(inputYHash);
+        float currentY = anim.GetFloat(inputYHash);
 
+        // 0.25f yumuşatma iyidir
         anim.SetFloat(inputXHash, Mathf.Lerp(currentX, x, 0.25f));
-        anim.SetFloat(inputYHash, Mathf.Lerp(currentZ, y, 0.25f));
+        anim.SetFloat(inputYHash, Mathf.Lerp(currentY, y, 0.25f));
 
-        
         anim.SetBool(isGroundedHash, isGrounded);
 
-       
+        // Unity 6 için linearVelocity, eski ise velocity
         bool falling = !isGrounded && rb.linearVelocity.y < -0.1f;
         bool jumping = !isGrounded && rb.linearVelocity.y > 0.1f;
 
@@ -123,21 +162,19 @@ public class AniCharNEw : MonoBehaviour
 
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
 
-       
         jumpCount++;
     }
 
     private void Respawn()
     {
         transform.position = ResPoint.position;
-        
         rb.linearVelocity = Vector3.zero;
     }
 
     private void FadeInOut()
     {
         if (fadeImage == null) return;
-
+        // ... (Senin fade kodun aynı kalıyor)
         if (yposition < 0f)
         {
             float fadeDuration = yposition / -10f;
@@ -151,7 +188,6 @@ public class AniCharNEw : MonoBehaviour
         }
     }
 
-   
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
