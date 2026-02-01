@@ -15,18 +15,22 @@ public class AniCharNEw : MonoBehaviour
     [Header("Movement Settings")]
     public float speed = 5f;
     public float jumpForce = 5f;
+    public float airControlSpeed = 20f;
 
     [Header("Ground Check")]
     public bool isGrounded;
     public float groundCheckDistance = 0.2f;
     public LayerMask groundLayer;
 
-    // Private Variables
+    // --- HİBRİT KONTROL ---
+    private bool usePhysicsMovement = false;
+    [HideInInspector] public float jumpCooldownTimer = 0f;
+
     private int jumpCount = 0;
     private float yposition;
     private Color FadeColorAlpha;
 
-    // Animator Hash ID'leri
+    // Hash ID'leri
     private int inputXHash = Animator.StringToHash("inputX");
     private int inputYHash = Animator.StringToHash("inputY");
     private int isGroundedHash = Animator.StringToHash("isGrounded");
@@ -39,15 +43,12 @@ public class AniCharNEw : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
         wallRunSystem = GetComponent<WallRunningSystem>();
 
-        // TİTREME ÖNLEYİCİ #1: Rigidbody Ayarları
-        rb.freezeRotation = true; // Fizik motoru karakteri döndürmesin
-        rb.interpolation = RigidbodyInterpolation.Interpolate; // Kareler arası yumuşatma
+        rb.freezeRotation = true;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
 
         if (anim == null) Debug.LogError("Animator bulunamadı!");
-
         cam = GetComponentInChildren<Camera>();
 
-        // Fade işlemleri
         fadeImage = FindFirstObjectByType<Image>();
         if (fadeImage != null)
         {
@@ -59,16 +60,15 @@ public class AniCharNEw : MonoBehaviour
 
     private void Update()
     {
-        // 1. INPUT ALMA
+        if (jumpCooldownTimer > 0) jumpCooldownTimer -= Time.deltaTime;
+
+        if ((wallRunSystem != null && wallRunSystem.IsWallJumpPossible()) || jumpCooldownTimer > 0) return;
+
         if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 1)
         {
-            // Duvardaysak zıplamayı WallRunSystem halletsin
-            if (wallRunSystem != null && wallRunSystem.isWallRunning) return;
-
             Jump();
         }
 
-        // 2. FADE KONTROLÜ
         yposition = transform.position.y;
         if (yposition < -10f) Respawn();
         FadeInOut();
@@ -76,80 +76,96 @@ public class AniCharNEw : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // --- WALL RUN KONTROLÜ ---
         if (wallRunSystem != null && wallRunSystem.isWallRunning)
         {
             isGrounded = false;
             UpdateAnimation(0, 0);
-            // Duvardayken Translate yapmıyoruz, kontrol tamamen WallRunSystem'de (Fizik tabanlı)
             return;
         }
 
-        // --- 1. NORMAL HAREKET (Translate ile) ---
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        // Hareket vektörü (Local Space)
-        Vector3 movement = new Vector3(horizontal, 0f, vertical) * speed * Time.deltaTime;
-
-        // TİTREME ÖNLEYİCİ #2: Akıllı Hareket (Smart Move)
-        // Translate yapmadan önce, gideceğimiz yönde duvar var mı diye kontrol ediyoruz.
-        // Rigidbody.SweepTest bizim yerimize fiziği kontrol eder.
-        // TransformDirection ile local hareketi dünya yönüne çeviriyoruz.
-        Vector3 worldDir = transform.TransformDirection(movement.normalized);
-
-        // Eğer gideceğimiz yönde (hareket miktarı kadar) bir engel YOKSA hareket et
-        // Veya hareket çok küçükse (duruyorsak) kontrol etme
-        if (movement.magnitude > 0.001f)
+        // --- HİBRİT HAREKET ---
+        if (usePhysicsMovement)
         {
-            // Önümüzde engel yoksa yürü
-            if (!rb.SweepTest(worldDir, out RaycastHit hit, movement.magnitude + 0.01f))
+            // FİZİK MODU (Wall Jump sonrası kısa süre buradayız)
+            // Havada dönmeye izin ver ama karakteri roket gibi ileri itme (Momentum zaten var)
+            Vector3 camForward = cam.transform.forward; camForward.y = 0; camForward.Normalize();
+            Vector3 camRight = cam.transform.right; camRight.y = 0; camRight.Normalize();
+            Vector3 airMove = (camForward * vertical + camRight * horizontal).normalized * airControlSpeed;
+
+            rb.AddForce(airMove, ForceMode.Acceleration);
+        }
+        else
+        {
+            // NORMAL MOD (TRANSLATE) - Kontrol tamamen sende
+            Vector3 movement = new Vector3(horizontal, 0f, vertical) * speed * Time.deltaTime;
+            Vector3 worldDir = transform.TransformDirection(movement.normalized);
+
+            if (movement.magnitude > 0.001f)
             {
-                transform.Translate(movement);
-            }
-            // Engel varsa ama çok dik değilse (merdiven/yokuş gibi) yine de yürü
-            else if (isGrounded)
-            {
-                // Basit bir kaydırma mantığı (duvara takılmamak için)
-                // Burayı boş bırakıyoruz, SweepTest duvara girmeyi engellediği için titreme kesilir.
+                if (!rb.SweepTest(worldDir, out RaycastHit hit, movement.magnitude + 0.01f))
+                {
+                    transform.Translate(movement);
+                }
             }
         }
 
-        // Karakteri hep kameranın baktığı yöne çevir
-        // Slerp ekleyerek dönüşü biraz yumuşattım (Jitter azaltır)
         Quaternion targetRotation = Quaternion.Euler(0f, cam.transform.eulerAngles.y, 0f);
         transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, 15f * Time.deltaTime);
 
-        // --- 2. GROUND CHECK ---
         Vector3 rayStart = transform.position + Vector3.up * 0.1f;
         isGrounded = Physics.Raycast(rayStart, Vector3.down, groundCheckDistance, groundLayer);
 
         if (isGrounded)
         {
             jumpCount = 0;
+            if (usePhysicsMovement) StopPhysicsMomentum(); // Yere değersek hemen kes
         }
 
-        // --- 3. ANIMASYON GÜNCELLEME ---
         UpdateAnimation(horizontal, vertical);
+    }
+
+    public void EnablePhysicsMovement()
+    {
+        usePhysicsMovement = true;
+    }
+
+    // --- YENİ EKLENEN FONKSİYON: MOMENTUM KESİCİ ---
+    // WallRunningSystem tarafından belirli bir süre sonra çağrılır.
+    public void StopPhysicsMomentum()
+    {
+        if (!usePhysicsMovement) return; // Zaten kapalıysa işlem yapma
+
+        usePhysicsMovement = false; // Translate moduna geç
+
+        // KRİTİK NOKTA: Rigidbody'de kalan hızı SIFIRLA.
+        // Sadece Y (Gravity) kalsın, X ve Z'yi öldür.
+        // Böylece karakter "buzda kaymaz", havada tak diye durup senin W tuşuna itaat eder.
+        rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
+    }
+
+    public void LockJumpInput(float duration)
+    {
+        jumpCooldownTimer = duration;
+    }
+
+    public void ResetJumpCount()
+    {
+        jumpCount = 0;
     }
 
     private void UpdateAnimation(float x, float y)
     {
         if (anim == null) return;
-
         float currentX = anim.GetFloat(inputXHash);
         float currentY = anim.GetFloat(inputYHash);
-
-        // 0.25f yumuşatma iyidir
         anim.SetFloat(inputXHash, Mathf.Lerp(currentX, x, 0.25f));
         anim.SetFloat(inputYHash, Mathf.Lerp(currentY, y, 0.25f));
-
         anim.SetBool(isGroundedHash, isGrounded);
-
-        // Unity 6 için linearVelocity, eski ise velocity
         bool falling = !isGrounded && rb.linearVelocity.y < -0.1f;
         bool jumping = !isGrounded && rb.linearVelocity.y > 0.1f;
-
         anim.SetBool(isFallingHash, falling);
         anim.SetBool(isJumpingHash, jumping);
     }
@@ -159,9 +175,7 @@ public class AniCharNEw : MonoBehaviour
         Vector3 velocity = rb.linearVelocity;
         velocity.y = 0f;
         rb.linearVelocity = velocity;
-
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-
         jumpCount++;
     }
 
@@ -169,12 +183,14 @@ public class AniCharNEw : MonoBehaviour
     {
         transform.position = ResPoint.position;
         rb.linearVelocity = Vector3.zero;
+        jumpCount = 0;
+        usePhysicsMovement = false;
+        jumpCooldownTimer = 0;
     }
 
     private void FadeInOut()
     {
         if (fadeImage == null) return;
-        // ... (Senin fade kodun aynı kalıyor)
         if (yposition < 0f)
         {
             float fadeDuration = yposition / -10f;

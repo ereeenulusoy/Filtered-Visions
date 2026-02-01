@@ -545,7 +545,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4906838889796845047, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: -4906838889796845047, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_TagString
@@ -597,7 +597,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3137722172632951806, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: -3137722172632951806, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_TagString
@@ -645,7 +645,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2181743766629440291, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: -2181743766629440291, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_TagString
@@ -809,7 +809,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1502877291743220047, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1502877291743220047, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_TagString
@@ -905,7 +905,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4356877828898064976, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4356877828898064976, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_TagString
@@ -917,7 +917,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4504409719310791647, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4504409719310791647, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_TagString
@@ -961,7 +961,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5252682845850649624, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5252682845850649624, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_TagString
@@ -973,7 +973,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6014503084441653313, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6014503084441653313, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_TagString
@@ -1001,7 +1001,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7103153012782714218, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7103153012782714218, guid: 6d18292b0f086194cb2a7008a3c53e42, type: 3}
       propertyPath: m_TagString
@@ -1479,7 +1479,7 @@ GameObject:
   m_Component:
   - component: {fileID: 103570355}
   - component: {fileID: 103570356}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: red5 (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -4031,7 +4031,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1142685190}
   - component: {fileID: 1142685191}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: blue9 (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -4238,7 +4238,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1280025433}
   - component: {fileID: 1280025434}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: blue7 (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -4644,8 +4644,8 @@ MonoBehaviour:
   target: {fileID: 543450653558857125}
   distance: 5
   height: 2
-  mouseSensitivity: 10
-  smoothSpeed: 100
+  mouseSensitivity: 6
+  smoothSpeed: 200
   minY: -30
   maxY: 60
 --- !u!1 &1348130874
@@ -4901,6 +4901,7 @@ GameObject:
   - component: {fileID: 1438684084}
   - component: {fileID: 1438684082}
   - component: {fileID: 1438684083}
+  - component: {fileID: 1438684086}
   m_Layer: 0
   m_Name: KarakterCOlls
   m_TagString: Player
@@ -4933,7 +4934,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 1
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 1
 --- !u!114 &1438684083
 MonoBehaviour:
@@ -4952,11 +4953,13 @@ MonoBehaviour:
   fadeImage: {fileID: 299176178}
   speed: 6
   jumpForce: 30
+  airControlSpeed: 3
   isGrounded: 0
   groundCheckDistance: 1.28
   groundLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 72
+  jumpCooldownTimer: 0
 --- !u!136 &1438684084
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4988,15 +4991,44 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1438684081}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 45.39836, y: 35.23437, z: -148.27695}
+  m_LocalRotation: {x: -0, y: -0.99892807, z: -0, w: 0.046289902}
+  m_LocalPosition: {x: 17.2335, y: 1.74, z: -11.2924}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 543450653558857125}
   - {fileID: 1336340942}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -174.694, z: 0}
+--- !u!114 &1438684086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438684081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab69656b26416644e94c277c8fa22771, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WallRunningSystem
+  whatIsWall:
+    serializedVersion: 2
+    m_Bits: 64
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 8
+  wallRunSpeed: 7
+  wallClimbSpeed: 1
+  wallJumpUpForce: 30
+  wallJumpSideForce: 20
+  wallJumpBackForce: 10
+  wallJumpCoyoteTime: 0.25
+  momentumKillTime: 0.45
+  wallCheckDistance: 0.7
+  minJumpHeight: 1
+  orientation: {fileID: 1438684085}
+  isWallRunning: 0
 --- !u!1 &1445410131
 GameObject:
   m_ObjectHideFlags: 0
@@ -5144,7 +5176,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1463518317}
   - component: {fileID: 1463518318}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: red4 (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -5626,7 +5658,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1622129275}
   - component: {fileID: 1622129276}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: blue8 (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -6028,7 +6060,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1798013203}
   - component: {fileID: 1798013204}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: blue10 (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -6081,7 +6113,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1820417178}
   - component: {fileID: 1820417179}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: red6 (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}

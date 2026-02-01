@@ -5,39 +5,49 @@ public class WallRunningSystem : MonoBehaviour
     [Header("Ayarlar")]
     public LayerMask whatIsWall;
     public LayerMask whatIsGround;
-    public float wallRunForce = 200f; // Duvarda ilerleme hýzý
-    public float wallJumpUpForce = 7f; // Yukarý zýplama gücü
-    public float wallJumpSideForce = 12f; // Yana zýplama gücü
-    public float maxWallRunTime = 1.5f; // Duvarda ne kadar kalabilir?
+    public float wallRunSpeed = 8f;
+    public float wallClimbSpeed = 0f;
+    public float wallJumpUpForce = 12f;
+    public float wallJumpSideForce = 15f;
+    public float wallJumpBackForce = 10f;
+    public float wallJumpCoyoteTime = 0.25f;
 
-    [Header("Input")]
-    private float horizontalInput;
-    private float verticalInput;
+    [Header("Momentum Ayarý")]
+    public float momentumKillTime = 0.3f;
 
-    [Header("Detection (Tespit)")]
-    public float wallCheckDistance = 0.7f;
-    public float minJumpHeight = 1.0f; // Yerden ne kadar yüksekte olmalý?
+    [Header("Detection")]
+    public float wallCheckDistance = 0.8f;
+    public float minJumpHeight = 1.0f;
 
     private RaycastHit leftWallHit;
     private RaycastHit rightWallHit;
+    private RaycastHit frontWallHit;
+
     private bool wallLeft;
     private bool wallRight;
+    private bool wallFront;
+
+    private float lastWallTime;
+    private Vector3 lastWallNormal;
+
+    // --- YENÝ EKLENEN: DUVARDAN ÇIKIÞ KÝLÝDÝ ---
+    // Zýpladýðýmýzda W'ye bassak bile tekrar yapýþmayý engeller
+    private bool exitingWall;
+    private float exitWallTimer;
+    private float exitWallTime = 0.2f; // 0.2 saniye boyunca tekrar duvara yapýþmaz
 
     [Header("Referanslar")]
-    public Transform orientation; // Karakterin yönü (Kamera açýsý)
-    private AniCharNEw mainScript; // Ana hareket scriptin
+    public Transform orientation;
+    private AniCharNEw mainScript;
     private Rigidbody rb;
 
-    // Durum Kontrolü
     public bool isWallRunning;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         mainScript = GetComponent<AniCharNEw>();
-
-        // Eðer Orientation atanmadýysa, kamerayý referans al (Geçici çözüm)
-        if (orientation == null) orientation = mainScript.cam.transform;
+        if (orientation == null) orientation = transform;
     }
 
     private void Update()
@@ -54,54 +64,72 @@ public class WallRunningSystem : MonoBehaviour
 
     private void CheckForWall()
     {
-        // Saðýmýza ve Solumuza ýþýn atýyoruz
-        // orientation.right -> Sað taraf
-        // -orientation.right -> Sol taraf
         wallRight = Physics.Raycast(transform.position, orientation.right, out rightWallHit, wallCheckDistance, whatIsWall);
         wallLeft = Physics.Raycast(transform.position, -orientation.right, out leftWallHit, wallCheckDistance, whatIsWall);
+        wallFront = Physics.Raycast(transform.position, orientation.forward, out frontWallHit, wallCheckDistance, whatIsWall);
+
+        if (wallRight || wallLeft || wallFront)
+        {
+            lastWallTime = Time.time;
+            if (wallRight) lastWallNormal = rightWallHit.normal;
+            else if (wallLeft) lastWallNormal = leftWallHit.normal;
+            else if (wallFront) lastWallNormal = frontWallHit.normal;
+        }
     }
 
     private bool AboveGround()
     {
-        // Yerden yeterince yüksekte miyiz? (Raycast boyu: minJumpHeight)
         return !Physics.Raycast(transform.position, Vector3.down, minJumpHeight, whatIsGround);
+    }
+
+    public bool IsWallJumpPossible()
+    {
+        bool wallNearby = isWallRunning || (Time.time < lastWallTime + wallJumpCoyoteTime);
+        return (wallNearby || wallFront) && AboveGround();
     }
 
     private void StateMachine()
     {
-        // Inputlarý al
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
+        float verticalInput = Input.GetAxisRaw("Vertical");
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
 
-        // Duvardaysak, W'ye basýyorsak ve Yerde Deðilsek -> Wall Run Baþlat
-        if ((wallLeft || wallRight) && verticalInput > 0 && AboveGround())
+        // --- WALL RUN BAÞLATMA ---
+        // YENÝ ÞART: "!exitingWall" -> Eðer duvardan yeni zýpladýysak W'ye bassak da baþlatma!
+        if ((wallLeft || wallRight) && verticalInput > 0 && AboveGround() && !wallFront && !exitingWall)
         {
             if (!isWallRunning)
                 StartWallRun();
+        }
+        else if (exitingWall)
+        {
+            // Exit süresini say
+            if (exitWallTimer > 0)
+                exitWallTimer -= Time.deltaTime;
 
-            // Duvardayken Zýplama
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                WallJump();
-            }
+            if (exitWallTimer <= 0)
+                exitingWall = false;
         }
         else
         {
             if (isWallRunning)
                 StopWallRun();
         }
+
+        // --- ZIPLAMA KONTROLÜ ---
+        if (Input.GetKeyDown(KeyCode.Space) && IsWallJumpPossible())
+        {
+            WallJump();
+        }
     }
 
     private void StartWallRun()
     {
         isWallRunning = true;
-
-        // Ana scripte "Duvardayýz, yere basma kontrolünü veya yerçekimini sal" diyebiliriz
-        // Þimdilik sadece yerçekimini kapatýyoruz.
         rb.useGravity = false;
-
-        // Düþüþ hýzýný sýfýrla ki duvarda kaymasýn
+        mainScript.ResetJumpCount();
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+
+        mainScript.CancelInvoke("StopPhysicsMomentum");
     }
 
     private void StopWallRun()
@@ -112,38 +140,56 @@ public class WallRunningSystem : MonoBehaviour
 
     private void WallRunningMovement()
     {
-        // Duvarýn normalini (yüzey yönünü) al
         Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
-
-        // Duvarýn yönüne paralel bir "Ýleri" vektörü bul
-        // (Matematiksel sihir: Normal ile Yukarý vektörünün çarpýmý duvarýn ileri yönünü verir)
         Vector3 wallForward = Vector3.Cross(wallNormal, transform.up);
 
-        // Yönü düzelt (Karakterin baktýðý yöne çevir)
         if ((orientation.forward - wallForward).magnitude > (orientation.forward - -wallForward).magnitude)
             wallForward = -wallForward;
 
-        // Ýleri Kuvvet Uygula
-        rb.AddForce(wallForward * wallRunForce, ForceMode.Force);
+        Vector3 targetVelocity = wallForward * wallRunSpeed;
+        targetVelocity.y = wallClimbSpeed;
+        rb.linearVelocity = targetVelocity;
 
-        // Duvara Yapýþtýrma Kuvveti (Karakter duvardan kopmasýn diye hafifçe duvara itiyoruz)
-        if (!(wallLeft && horizontalInput > 0) && !(wallRight && horizontalInput < 0))
+        if (!(wallLeft && Input.GetAxisRaw("Horizontal") > 0) && !(wallRight && Input.GetAxisRaw("Horizontal") < 0))
             rb.AddForce(-wallNormal * 100, ForceMode.Force);
     }
 
     private void WallJump()
     {
-        // Önce wall run'ý bitir
-        StopWallRun();
+        // 1. Zýpladýðýmýz an Wall Run modundan çýk ve "Exiting" moduna gir
+        isWallRunning = false;
+        rb.useGravity = true;
 
-        // Zýplama Yönleri
-        Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
+        exitingWall = true; // YENÝ: Artýk kod biliyor ki duvardan ayrýlýyoruz
+        exitWallTimer = exitWallTime; // 0.2 saniye boyunca W tuþunu yoksay (Wall Run için)
 
-        // Yukarý + Duvarýn Tersi
-        Vector3 forceToApply = transform.up * wallJumpUpForce + wallNormal * wallJumpSideForce;
+        Vector3 forceNormal = lastWallNormal;
+        if (wallRight) forceNormal = rightWallHit.normal;
+        else if (wallLeft) forceNormal = leftWallHit.normal;
+        else if (wallFront) forceNormal = frontWallHit.normal;
 
-        // Hýzý sýfýrla ve fýrlat (Daha keskin zýplama için)
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-        rb.AddForce(forceToApply, ForceMode.Impulse);
+
+        Vector3 jumpDirection;
+
+        if (wallFront && !wallLeft && !wallRight)
+        {
+            jumpDirection = transform.up * wallJumpUpForce + forceNormal * wallJumpBackForce;
+        }
+        else
+        {
+            jumpDirection = transform.up * wallJumpUpForce + forceNormal * wallJumpSideForce;
+            jumpDirection += orientation.forward * (wallJumpSideForce / 2f);
+        }
+
+        rb.AddForce(jumpDirection, ForceMode.Impulse);
+
+        mainScript.EnablePhysicsMovement();
+        mainScript.LockJumpInput(0.15f);
+
+        mainScript.CancelInvoke("StopPhysicsMomentum");
+        mainScript.Invoke("StopPhysicsMomentum", momentumKillTime);
+
+        lastWallTime = 0f;
     }
 }
