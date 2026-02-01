@@ -2,31 +2,48 @@ using UnityEngine;
 
 public class KameraScript : MonoBehaviour
 {
-    public float mouseSensitivity = 100f;
-    public float xRotation = 0f; 
-    
+    public Transform target;
 
-    public Transform player;
-    [SerializeField] private Vector3 offset;
+    [Header("Camera Settings")]
+    public float distance = 5f;
+    public float height = 2f;
+    public float mouseSensitivity = 3f;
+    public float smoothSpeed = 10f;
+
+    [Header("Clamp")]
+    public float minY = -30f;
+    public float maxY = 60f;
+
+    private float currentX;
+    private float currentY;
 
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
-    void Update()
+
+    private void LateUpdate()
     {
-        transform.position = player.position ;
+        if (!target) return;
 
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        player.Rotate(Vector3.up * mouseX);
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        currentX += Input.GetAxis("Mouse X") * mouseSensitivity;
+        currentY -= Input.GetAxis("Mouse Y") * mouseSensitivity;
+        currentY = Mathf.Clamp(currentY, minY, maxY);
 
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        Quaternion rotation = Quaternion.Euler(currentY, currentX, 0f);
 
+        Vector3 desiredPosition =
+            target.position
+            - (rotation * Vector3.forward * distance)
+            + Vector3.up * height;
 
-        // Kameranýn kendi rotasyonunu (X ekseni) güncelle
-        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        transform.position = Vector3.Lerp(
+            transform.position,
+            desiredPosition,
+            smoothSpeed * Time.deltaTime
+        );
 
+        transform.LookAt(target.position + Vector3.up * height);
     }
 }
