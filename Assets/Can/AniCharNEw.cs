@@ -93,7 +93,7 @@ public class AniCharNEw : MonoBehaviour
         UpdateAnimation(horizontal, vertical);
     }
 
-    private void UpdateAnimation(float x, float z)
+    private void UpdateAnimation(float x, float y)
     {
         if (anim == null) return;
 
@@ -101,8 +101,8 @@ public class AniCharNEw : MonoBehaviour
         float currentX = anim.GetFloat(inputXHash);
         float currentZ = anim.GetFloat(inputYHash);
 
-        anim.SetFloat(inputXHash, Mathf.Lerp(currentX, x, 0.05f));
-        anim.SetFloat(inputYHash, Mathf.Lerp(currentZ, z, 0.05f));
+        anim.SetFloat(inputXHash, Mathf.Lerp(currentX, x, 0.25f));
+        anim.SetFloat(inputYHash, Mathf.Lerp(currentZ, y, 0.25f));
 
         
         anim.SetBool(isGroundedHash, isGrounded);
