@@ -30,11 +30,10 @@ public class WallRunningSystem : MonoBehaviour
     private float lastWallTime;
     private Vector3 lastWallNormal;
 
-    // --- YENÝ EKLENEN: DUVARDAN ÇIKIÞ KÝLÝDÝ ---
     // Zýpladýðýmýzda W'ye bassak bile tekrar yapýþmayý engeller
     private bool exitingWall;
     private float exitWallTimer;
-    private float exitWallTime = 0.2f; // 0.2 saniye boyunca tekrar duvara yapýþmaz
+    private float exitWallTime = 0.2f;
 
     [Header("Referanslar")]
     public Transform orientation;
@@ -54,12 +53,27 @@ public class WallRunningSystem : MonoBehaviour
     {
         CheckForWall();
         StateMachine();
+
+        // --- YENÝ EKLENEN: ANÝMASYON BAÐLANTISI ---
+        UpdateAnimationLink();
     }
 
     private void FixedUpdate()
     {
         if (isWallRunning)
             WallRunningMovement();
+    }
+
+    // --- YENÝ EKLENEN FONKSÝYON ---
+    private void UpdateAnimationLink()
+    {
+        // Duvar tarafýný belirle (1: Sað, -1: Sol)
+        float side = 0f;
+        if (wallRight) side = 1f;
+        else if (wallLeft) side = -1f;
+
+        // Ana scripte durumu bildir
+        mainScript.SetWallRunAnimation(isWallRunning, side);
     }
 
     private void CheckForWall()
@@ -91,10 +105,8 @@ public class WallRunningSystem : MonoBehaviour
     private void StateMachine()
     {
         float verticalInput = Input.GetAxisRaw("Vertical");
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
 
         // --- WALL RUN BAÞLATMA ---
-        // YENÝ ÞART: "!exitingWall" -> Eðer duvardan yeni zýpladýysak W'ye bassak da baþlatma!
         if ((wallLeft || wallRight) && verticalInput > 0 && AboveGround() && !wallFront && !exitingWall)
         {
             if (!isWallRunning)
@@ -102,7 +114,6 @@ public class WallRunningSystem : MonoBehaviour
         }
         else if (exitingWall)
         {
-            // Exit süresini say
             if (exitWallTimer > 0)
                 exitWallTimer -= Time.deltaTime;
 
@@ -156,12 +167,11 @@ public class WallRunningSystem : MonoBehaviour
 
     private void WallJump()
     {
-        // 1. Zýpladýðýmýz an Wall Run modundan çýk ve "Exiting" moduna gir
         isWallRunning = false;
         rb.useGravity = true;
 
-        exitingWall = true; // YENÝ: Artýk kod biliyor ki duvardan ayrýlýyoruz
-        exitWallTimer = exitWallTime; // 0.2 saniye boyunca W tuþunu yoksay (Wall Run için)
+        exitingWall = true;
+        exitWallTimer = exitWallTime;
 
         Vector3 forceNormal = lastWallNormal;
         if (wallRight) forceNormal = rightWallHit.normal;
@@ -183,6 +193,9 @@ public class WallRunningSystem : MonoBehaviour
         }
 
         rb.AddForce(jumpDirection, ForceMode.Impulse);
+
+        // --- YENÝ: ANÝMASYON TETÝKLE ---
+        mainScript.TriggerWallJumpAnimation();
 
         mainScript.EnablePhysicsMovement();
         mainScript.LockJumpInput(0.15f);
