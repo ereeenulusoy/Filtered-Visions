@@ -30,7 +30,6 @@ public class WallRunningSystem : MonoBehaviour
     private float lastWallTime;
     private Vector3 lastWallNormal;
 
-    // Zýpladýðýmýzda W'ye bassak bile tekrar yapýþmayý engeller
     private bool exitingWall;
     private float exitWallTimer;
     private float exitWallTime = 0.2f;
@@ -54,7 +53,6 @@ public class WallRunningSystem : MonoBehaviour
         CheckForWall();
         StateMachine();
 
-        // --- YENÝ EKLENEN: ANÝMASYON BAÐLANTISI ---
         UpdateAnimationLink();
     }
 
@@ -64,15 +62,12 @@ public class WallRunningSystem : MonoBehaviour
             WallRunningMovement();
     }
 
-    // --- YENÝ EKLENEN FONKSÝYON ---
     private void UpdateAnimationLink()
     {
-        // Duvar tarafýný belirle (1: Sað, -1: Sol)
         float side = 0f;
         if (wallRight) side = 1f;
         else if (wallLeft) side = -1f;
 
-        // Ana scripte durumu bildir
         mainScript.SetWallRunAnimation(isWallRunning, side);
     }
 
@@ -106,7 +101,6 @@ public class WallRunningSystem : MonoBehaviour
     {
         float verticalInput = Input.GetAxisRaw("Vertical");
 
-        // --- WALL RUN BAÞLATMA ---
         if ((wallLeft || wallRight) && verticalInput > 0 && AboveGround() && !wallFront && !exitingWall)
         {
             if (!isWallRunning)
@@ -126,7 +120,6 @@ public class WallRunningSystem : MonoBehaviour
                 StopWallRun();
         }
 
-        // --- ZIPLAMA KONTROLÜ ---
         if (Input.GetKeyDown(KeyCode.Space) && IsWallJumpPossible())
         {
             WallJump();
@@ -194,7 +187,6 @@ public class WallRunningSystem : MonoBehaviour
 
         rb.AddForce(jumpDirection, ForceMode.Impulse);
 
-        // --- YENÝ: ANÝMASYON TETÝKLE ---
         mainScript.TriggerWallJumpAnimation();
 
         mainScript.EnablePhysicsMovement();

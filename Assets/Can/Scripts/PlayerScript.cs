@@ -22,10 +22,7 @@ public class PlayerScript : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         Debug.Log(ResPoint.position);
-        // Eðer fadeImage'i Inspector'dan atýyorsanýz þu satýrý kaldýrabilirsiniz.
         fadeImage = FindFirstObjectByType<Image>();
-        // Hata: 'fadeImage.color.a = 0f;' yazýlamaz çünkü 'color' bir struct (Color) olarak deðere göre döner.
-        // Dönen struct'ýn alanýný doðrudan deðiþtiremezsiniz. Bunun yerine Color'u alýp deðiþtirip tekrar atayýn:
         if (fadeImage != null)
         {
             FadeColorAlpha = fadeImage.color;
@@ -70,14 +67,12 @@ public class PlayerScript : MonoBehaviour
 
     private void Respawn()
     {
-        // 19.13, 0.50, -11.04
         transform.position = ResPoint.position;
 
     }
 
     private void FadeInOut()
     {
-        // Implement fade in/out effect here
 
         if (yposition < 0f)
         {

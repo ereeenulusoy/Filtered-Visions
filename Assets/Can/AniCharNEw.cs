@@ -22,7 +22,7 @@ public class AniCharNEw : MonoBehaviour
     public float groundCheckDistance = 0.2f;
     public LayerMask groundLayer;
 
-    // --- HİBRİT KONTROL ---
+    
     private bool usePhysicsMovement = false;
     [HideInInspector] public float jumpCooldownTimer = 0f;
 
@@ -30,14 +30,14 @@ public class AniCharNEw : MonoBehaviour
     private float yposition;
     private Color FadeColorAlpha;
 
-    // Hash ID'leri
+    
     private int inputXHash = Animator.StringToHash("inputX");
     private int inputYHash = Animator.StringToHash("inputY");
     private int isGroundedHash = Animator.StringToHash("isGrounded");
     private int isJumpingHash = Animator.StringToHash("isJumping");
     private int isFallingHash = Animator.StringToHash("isFalling");
 
-    // --- YENİ EKLENEN ANİMASYON HASHLERİ ---
+    
     private int isWallRunningHash = Animator.StringToHash("isWallRunning");
     private int wallSideHash = Animator.StringToHash("wallSide");
     private int trigWallJumpHash = Animator.StringToHash("trigWallJump");
@@ -91,10 +91,10 @@ public class AniCharNEw : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        // --- HİBRİT HAREKET ---
+        
         if (usePhysicsMovement)
         {
-            // FİZİK MODU (Wall Jump sonrası)
+            
             Vector3 camForward = cam.transform.forward; camForward.y = 0; camForward.Normalize();
             Vector3 camRight = cam.transform.right; camRight.y = 0; camRight.Normalize();
             Vector3 airMove = (camForward * vertical + camRight * horizontal).normalized * airControlSpeed;
@@ -103,7 +103,7 @@ public class AniCharNEw : MonoBehaviour
         }
         else
         {
-            // NORMAL MOD (TRANSLATE)
+            
             Vector3 movement = new Vector3(horizontal, 0f, vertical) * speed * Time.deltaTime;
             Vector3 worldDir = transform.TransformDirection(movement.normalized);
 
@@ -125,7 +125,7 @@ public class AniCharNEw : MonoBehaviour
         if (isGrounded)
         {
             jumpCount = 0;
-            if (usePhysicsMovement) StopPhysicsMomentum(); // Yere değersek hemen kes
+            if (usePhysicsMovement) StopPhysicsMomentum(); 
         }
 
         UpdateAnimation(horizontal, vertical);
@@ -141,7 +141,7 @@ public class AniCharNEw : MonoBehaviour
         if (!usePhysicsMovement) return;
 
         usePhysicsMovement = false;
-        // Yatay hızı sıfırla, Gravity kalsın
+        
         rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
     }
 
@@ -155,23 +155,19 @@ public class AniCharNEw : MonoBehaviour
         jumpCount = 0;
     }
 
-    // --- YENİ EKLENEN: DUVAR ANİMASYONU ---
     public void SetWallRunAnimation(bool isRunning, float side)
     {
         if (anim == null) return;
 
         anim.SetBool(isWallRunningHash, isRunning);
 
-        // Eğer koşuyorsak tarafı güncelle (-1 Sol, 1 Sağ)
         if (isRunning)
         {
             float currentSide = anim.GetFloat(wallSideHash);
-            // Lerp ile yumuşak geçiş
             anim.SetFloat(wallSideHash, Mathf.Lerp(currentSide, side, 10f * Time.deltaTime));
         }
     }
 
-    // --- YENİ EKLENEN: DUVAR ZIPLAMASI ---
     public void TriggerWallJumpAnimation()
     {
         if (anim == null) return;

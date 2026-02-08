@@ -1,30 +1,54 @@
 using UnityEngine;
-using UnityEngine.Video; // Video kütüphanesini ekledik
+using UnityEngine.Video;
 using UnityEngine.SceneManagement;
+using System.IO; // Path iþlemleri için gerekli
 
 public class MenuManager : MonoBehaviour
 {
     [Header("Video Ayarlarý")]
-    public VideoPlayer introVideo; // Inspector panelinden Video Player'ý buraya sürükle
+    public VideoPlayer introVideo; // Video Player objesini buraya sürükle
+    public string videoFileName = "intro.mp4"; // StreamingAssets içindeki dosya adý
+    public GameObject videoScreenObject; // Video Player'ýn olduðu GameObject (Kendisi)
 
     public void StartGame()
     {
-        // Eðer video atanmýþsa videoyu baþlat ve bitiþini bekle
-        if (introVideo != null)
+        // Video atanmýþsa süreci baþlat
+        if (introVideo != null && videoScreenObject != null)
         {
-            introVideo.Play();
-            introVideo.loopPointReached += ChangeScene; // Video bitince ChangeScene çalýþýr
+            // 1. Önce videonun olduðu objeyi aç (Görünür yap)
+            videoScreenObject.SetActive(true);
+
+            // 2. WebGL için URL yolunu ayarla (StreamingAssets mantýðý)
+            string videoPath = Path.Combine(Application.streamingAssetsPath, videoFileName);
+            introVideo.source = VideoSource.Url;
+            introVideo.url = videoPath;
+
+            // 3. Videoyu hazýrla ve olaylarý dinle
+            introVideo.prepareCompleted += OnVideoPrepared; // Hazýr olunca ne yapacaðýný söyle
+            introVideo.loopPointReached += ChangeScene;     // Bitince ne yapacaðýný söyle
+
+            introVideo.Prepare(); // Hazýrlamaya baþla
         }
         else
         {
-            // Video yoksa direkt sahneye geç
+            // Video yoksa direkt oyuna gir
             ChangeScene(null);
         }
     }
 
-    // Video bittiðinde çaðrýlacak metod
+    // Video belleðe yüklenip hazýr olduðunda çalýþýr
+    private void OnVideoPrepared(VideoPlayer vp)
+    {
+        vp.Play(); // Hazýr olunca OYNAT
+    }
+
+    // Video bittiðinde çalýþýr
     private void ChangeScene(VideoPlayer vp)
     {
+        // Olay aboneliklerini temizle (Hata almamak için)
+        vp.loopPointReached -= ChangeScene;
+        vp.prepareCompleted -= OnVideoPrepared;
+
         SceneManager.LoadScene("CAnd");
     }
 }
